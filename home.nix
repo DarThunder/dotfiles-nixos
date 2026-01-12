@@ -46,6 +46,7 @@
     brave
     spotify
     discord
+    steam
     onlyoffice-desktopeditors
     ffmpeg
     

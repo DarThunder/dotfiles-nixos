@@ -75,6 +75,8 @@
   enable = true;
   enable32Bit = true;
   };
+  hardware.bluetooth.enable = true;
+  services.blueman.enable = true;
   fonts.fontconfig = {
     enable = true;
     defaultFonts = {

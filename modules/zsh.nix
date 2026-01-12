@@ -33,8 +33,9 @@
     '';
 
     shellAliases = {
-      up = "cd ~/nix && sudo nixos-rebuild switch --flake .#omnissiah && cd -";
-      test = "cd ~/nix && sudo nixos-rebuild dry-activate --flake /home/darthunder/nix#omnissiah && cd -";
+      up = "cd ~/nix && nix flake update && cd -";
+      b = "cd ~/nix && sudo nixos-rebuild switch --flake .#omnissiah && cd -";
+      t = "cd ~/nix && sudo nixos-rebuild dry-activate --flake .#omnissiah && cd -";
       "in" = "nix shell nixpkgs#";
       ls = "eza";
       l = "eza -lh --icons=auto";
