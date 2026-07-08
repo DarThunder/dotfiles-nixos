@@ -1,0 +1,8 @@
+[Plymouth Theme]
+Name=Boot Sequence DarThunder
+Description=wingo
+ModuleName=script
+
+[script]
+ImageDir=/etc/plymouth/themes/boot_sequence
+ScriptFile=/etc/plymouth/themes/boot_sequence/boot_sequence.script

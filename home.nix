@@ -35,7 +35,11 @@
     gnumake
     clang-tools
     gnutar
+    libsodium
+    liboqs
     age
+    luau-lsp
+    pyright
 
     kdePackages.ark
     kdePackages.kio-extras
@@ -46,6 +50,7 @@
     brave
     spotify
     discord
+    protonup-qt
     steam
     onlyoffice-desktopeditors
     ffmpeg
@@ -60,9 +65,11 @@
     
     (prismlauncher.override {
       jdks = [
+        zulu25
         zulu21
         zulu17
         zulu8
+        graalvmPackages.graalvm-ce
       ];
     })
 
@@ -83,6 +90,24 @@
     qt6Packages.qt6ct
     qt6Packages.qtstyleplugin-kvantum
     zulu21
+    nodejs
+    obs-studio
+    perf
+    netbeans
+    texstudio
+    texlive.combined.scheme-full
+    kdePackages.kdenlive
+
+    wine64Packages.stable
+    winetricks
+    bottles
+    yt-dlp
+    rojo
+    mgba
+    pcsx2
+    eden
+    qimgv
+    postman
   ];
 
   home.pointerCursor = {

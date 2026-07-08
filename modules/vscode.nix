@@ -10,12 +10,14 @@
         vscode-icons-team.vscode-icons
         llvm-vs-code-extensions.vscode-clangd
         esbenp.prettier-vscode
-        sumneko.lua
+        #sumneko.lua
         jnoortheen.nix-ide
         redhat.java
         vscjava.vscode-java-debug
         vscjava.vscode-java-test
         vscjava.vscode-maven
+        ms-python.python
+        ms-python.vscode-pylance
       ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
         {
           name = "synthwave-vscode";
@@ -28,6 +30,18 @@
           publisher = "SirTori";
           version = "0.7.0";
           sha256 = "sha256-J5iNO6V5US+GFyNjNNA5u9H2pKPozWKjQWcLAhl+BjY=";
+        }
+        {
+          name = "vscode-rojo";
+          publisher = "evaera";
+          version = "2.1.2";
+          sha256 = "sha256-xWYQLz4o7QGGfn/zA2ztXRrb5JTsH1pMLz75fZsGNeg=";
+        }
+        {
+          name = "luau-lsp";
+          publisher = "JohnnyMorganz";
+          version = "1.64.1";
+          sha256 = "sha256-Go0+DDvtTO4D3yBwx0t5Zcz0qOi187RWu9oT1+1JLZ8=";
         }
       ];
       
@@ -75,24 +89,28 @@
         "indenticator.color.dark" = "rgba(255,255,255,0.2)";
         "indenticator.width" = 0.1;
         
-        "Lua.runtime.version" = "Lua 5.2";
-        "Lua.diagnostics.globals" = [
-          "bit" "colors" "colours" "commands" "disk" "fs" "gps" "help" "http" 
-          "keys" "multishell" "paintutils" "parallel" "peripheral" "pocket" 
-          "rednet" "redstone" "rs" "settings" "shell" "term" "textutils" 
-          "turtle" "vector" "window" "_CC_DEFAULT_SETTINGS" "_HOST" 
-          "printError" "write" "read" "sleep"
-        ];
-        "Lua.runtime.builtin" = {
-          "bit32" = "enable";
-          "bit" = "disable";
-          "utf8" = "enable";
-        };
-        "Lua.diagnostics.disable" = [ "undefined-field" "deprecated" ];
+        #"Lua.runtime.version" = "Lua 5.2";
+        #"Lua.diagnostics.globals" = [
+        #  "bit" "colors" "colours" "commands" "disk" "fs" "gps" "help" "http" 
+        #  "keys" "multishell" "paintutils" "parallel" "peripheral" "pocket" 
+        #  "rednet" "redstone" "rs" "settings" "shell" "term" "textutils" 
+        #  "turtle" "vector" "window" "_CC_DEFAULT_SETTINGS" "_HOST" 
+        #  "printError" "write" "read" "sleep"
+        #];
+        #"Lua.runtime.builtin" = {
+        #  "bit32" = "enable";
+        #  "bit" = "disable";
+        #  "utf8" = "enable";
+        #};
+        #"Lua.diagnostics.disable" = [ "undefined-field" "deprecated" ];
 
         "prettier.enable" = true;
         "redhat.telemetry.enabled" = true;
         "clangd.arguments" = [ "--query-driver=${pkgs.gcc}/bin/gcc" ];
+        "luau-lsp.platform.type" = "roblox";
+        "luau-lsp.require.mode" = "relativeToFile";
+        "luau-lsp.completion.imports.enabled" = true;
+        "luau-lsp.server.path" = "${pkgs.luau-lsp}/bin/luau-lsp";
       };
     };
   };

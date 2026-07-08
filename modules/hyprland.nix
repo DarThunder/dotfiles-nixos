@@ -56,6 +56,7 @@ in
       };
 
       exec-once = [
+      	"sh -c 'hyprctl monitors | grep -q HDMI-A-1 && hyprctl keyword monitor \"eDP-1,disable\"'"
         "dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP GNOME_KEYRING_CONTROL"
         "${pkgs.gnome-keyring}/bin/gnome-keyring-daemon --start --components=secrets"
         "${pkgs.networkmanagerapplet}/bin/nm-applet --indicator"
@@ -66,6 +67,7 @@ in
         "hyprlock"
         "${pkgs.hyprpaper}/bin/hyprpaper"
         "${pkgs.waybar}/bin/waybar"
+        "LANG=en_US.UTF-8 activate-linux"
       ];
 
       general = {
@@ -126,7 +128,6 @@ in
       };
 
       dwindle = {
-        pseudotile = true;
         preserve_split = true;
       };
 
@@ -140,8 +141,8 @@ in
       };
 
       monitor = [
-        "eDP-1, disable"
         "HDMI-A-1, 1920x1080@74.97, 0x0, 1.25"
+	"eDP-1, preferred, auto, 1"
 
         ", preferred, auto, 1"
       ];
@@ -203,7 +204,7 @@ in
       binddm = $mainMod, X, $d hold to resize window, resizewindow
 
       $d=[$wm]
-      bindd = $mainMod, J, $d toggle split, togglesplit
+      bindd = $mainMod, J, $d toggle split, layoutmsg, togglesplit
 
       $l=Launcher
       $d=[$l|Apps]
@@ -421,6 +422,12 @@ in
 
       windowrule = match:class ^(jetbrains-*), no_initial_focus on
       windowrule = match:title ^(wind.*)$, no_initial_focus on
+
+      windowrule = match:title ^(wallpaperengine)$, float on
+      windowrule = match:title ^(wallpaperengine)$, pin on
+      windowrule = match:title ^(wallpaperengine)$, size 100% 100%
+      windowrule = match:title ^(wallpaperengine)$, move 0 0
+      windowrule = match:title ^(wallpaperengine)$, no_blur on
 
       layerrule = match:namespace rofi, blur on
       layerrule = match:namespace notifications, blur on

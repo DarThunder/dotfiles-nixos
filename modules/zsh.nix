@@ -33,9 +33,10 @@
     '';
 
     shellAliases = {
-      up = "cd ~/nix && nix flake update && cd -";
+      up = "cd ~/nix && nix flake update && git add . && cd -";
       b = "cd ~/nix && sudo nixos-rebuild switch --flake .#omnissiah && cd -";
       t = "cd ~/nix && sudo nixos-rebuild dry-activate --flake .#omnissiah && cd -";
+      up-pkgs = "openssl dgst -sha256 -hex registry.lua | awk '{print $2}' > registry.sum && git add . && git commit -m \"update packages\" && git push";
       "in" = "nix shell nixpkgs#";
       ls = "eza";
       l = "eza -lh --icons=auto";

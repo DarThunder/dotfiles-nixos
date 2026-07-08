@@ -1,11 +1,29 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, inputs, ... }:
 
+let
+in
 {
   imports = [
     ./hardware-configuration.nix
   ];
 
-  boot.loader.systemd-boot.enable = false;
+  boot.plymouth = {
+    enable = true;
+    theme = "boot_sequence";
+    themePackages = [
+      (pkgs.stdenv.mkDerivation {
+        name = "plymouth-theme-boot-sequence";
+        src = ./boot_sequence;
+        dontBuild = true;
+        installPhase = ''
+          mkdir -p $out/share/plymouth/themes/boot_sequence
+          cp -r * $out/share/plymouth/themes/boot_sequence
+          # Esta línea cambia las rutas mágicamente al compilar:
+          sed -i "s|/etc/plymouth/themes/boot_sequence|$out/share/plymouth/themes/boot_sequence|g" $out/share/plymouth/themes/boot_sequence/boot_sequence.plymouth
+        '';
+      })
+    ];
+  };
   boot.loader.grub = {
     enable = true;
     device = "nodev";
@@ -36,7 +54,7 @@
   users.users.darthunder = {
     isNormalUser = true;
     shell = pkgs.zsh;
-    extraGroups = [ "wheel" "networkmanager" "video" "render" "storage" "docker" ];
+    extraGroups = [ "wheel" "networkmanager" "video" "render" "storage" "docker" "libvirtd" "kvm" ];
   };
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -53,7 +71,13 @@
     curl
     wget
     docker-compose
+    android-studio
+    android-tools
+    inputs.activate-linux.packages.${pkgs.system}.default
+    vlc
   ];
+
+  security.rtkit.enable = true;
 
   services.pipewire = {
     enable = true;
@@ -65,8 +89,33 @@
   services.gnome.gnome-keyring.enable = true;
   services.udisks2.enable = true;
   services.gvfs.enable = true;
+  services.flatpak = {
+    enable = true;
+    packages = [
+      { appId = "org.vinegarhq.Sober"; origin = "flathub"; }
+      { appId = "org.vinegarhq.Vinegar"; origin = "flathub"; }
+    ];
+  };
+  services.flatpak.remotes = [{
+    name = "flathub";
+    location = "https://dl.flathub.org/repo/flathub.flatpakrepo";
+  }];
+  xdg.portal = {
+    enable = true;
+    extraPortals = [ 
+      pkgs.xdg-desktop-portal-hyprland 
+      pkgs.xdg-desktop-portal-gtk
+    ];
+    config.common.default = "*";
+  };
 
   nixpkgs.config.allowUnfree = true;
+  nixpkgs.config.android_sdk.accept_license = true;
+  nixpkgs.config.packageOverrides = pkgs: {
+    openldap = pkgs.openldap.overrideAttrs (oldAttrs: {
+      doCheck = false;
+    });
+  };
 
   networking.firewall.enable = true;
 
@@ -85,6 +134,7 @@
       serif = [ "Noto Serif" "Noto Serif CJK JP" ];
     };
   };
+  hardware.keyboard.qmk.enable = true;
   fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
     nerd-fonts.monaspace
@@ -102,6 +152,69 @@
     enable = true;
     extraPackages = [ pkgs.docker-buildx ];
   };
+  virtualisation.libvirtd.enable = true;
+  programs.virt-manager.enable = true;
+  virtualisation.spiceUSBRedirection.enable = true;
+  programs.steam = {
+    enable = true;
+    remotePlay.openFirewall = true;
+    dedicatedServer.openFirewall = true;
+    extraPackages = with pkgs; [
+      gst_all_1.gstreamer
+      gst_all_1.gst-plugins-base
+      gst_all_1.gst-plugins-good
+      gst_all_1.gst-plugins-bad
+      gst_all_1.gst-plugins-ugly
+      gst_all_1.gst-libav
+    ];
+  };
+  programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = with pkgs; [
+    stdenv.cc.cc.lib
+  ];
+
+  systemd.user.services.adb = {
+    description = "Start adb server";
+    wantedBy = [ "graphical-session.target" ];
+    serviceConfig.ExecStart = "${pkgs.android-tools}/bin/adb start-server";
+  };
+  systemd.user.services.easyeffects = {
+    description = "EasyEffects Daemon";
+    requires = [ "dbus.service" ];
+    after = [ "graphical-session-pre.target" ];
+    partOf = [ "graphical-session.target" "pipewire.service" ];
+    wantedBy = [ "graphical-session.target" ];
+    serviceConfig = {
+      ExecStart = "${pkgs.easyeffects}/bin/easyeffects --gapplication-service";
+      ExecStop = "${pkgs.easyeffects}/bin/easyeffects --quit";
+      Restart = "on-failure";
+      RestartSec = 5;
+    };
+  };
+
+  services.earlyoom = {
+    enable = true;
+    freeMemThreshold = 5;
+    freeSwapThreshold = 2;
+    extraArgs = [
+      "-g"
+      "--prefer '^(java|minecraft|electron)$'"
+      "--avoid '^(hyprland|Xorg|systemd)$'"
+    ];
+  };
+
+  services.udev.packages = with pkgs; [
+    via
+    vial
+    qmk-udev-rules
+  ];
+
+  zramSwap.enable = true;
+  zramSwap.algorithm = "zstd";
+  zramSwap.memoryPercent = 50;
+
+  networking.firewall.allowedUDPPorts = [ 8080 1337 ];
+  networking.firewall.allowedTCPPorts = [ 8080 ];
 
   system.stateVersion = "25.11";
 }
